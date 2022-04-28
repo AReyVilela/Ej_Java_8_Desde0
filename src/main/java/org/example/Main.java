@@ -1,19 +1,16 @@
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+package org.example;
+
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
 
         Supermercado supermercado = new Supermercado();
-
         int opcion = 0;
         Scanner sc = new Scanner(System.in);
 
-       // supermercado.ReponerProductos();
-        //MIreponedor.reponer(supermercado)
-        Reponedor.ReponerProductos(supermercado.ListaProductos,supermercado.StockProducto);
+        Reponer.reponerProductos(supermercado.listaProductos, supermercado.stockProducto);
+
         try {
             do {
                 menu();
@@ -21,13 +18,15 @@ public class Main {
                 System.out.println("");
                 switch (opcion) {
                     case 0: //LISTAR PRODUCTOS
-                        supermercado.ListarProductos();
+                        supermercado.listarProductos();
                         break;
                     case 1://VENDER PRODUCTO POR ID
-                        supermercado.VenderProducto();
+                        System.out.println("Indica el ID del producto a vender: ");
+                        int idaEliminar = Integer.parseInt(sc.nextLine());
+                        supermercado.venderProducto(idaEliminar);
                         break;
                     case 2://MOSTRAR CAJA
-                        supermercado.SaldoCaja();
+                        supermercado.saldoCaja();
                         break;
                     case 3://SALIR
                         System.out.println("SALIENDO");
@@ -46,7 +45,7 @@ public class Main {
 
     public static void menu() {
 
-        System.out.println("***********Bienvenido al Supermercado***************");
+        System.out.println("***********Bienvenido al org.example.Supermercado***************");
         System.out.println("0. Listar Productos");
         System.out.println("1. Vender Producto por id");
         System.out.println("2. Mostrar caja");

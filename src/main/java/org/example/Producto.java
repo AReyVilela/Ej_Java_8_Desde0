@@ -1,17 +1,25 @@
-public class Producto {
+package org.example;
+
+import java.util.ArrayList;
+
+public class Producto extends ArrayList<Producto> {
 
 
     public int id;
     public float precio;
     public String descripcion;
 
-    public Producto() {
-    }
+
     public Producto(int id, float precio, String descripcion) {
         this.id = id;
         this.precio = precio;
         this.descripcion = descripcion;
     }
+
+    public Producto() {
+
+    }
+
 
     public int getId() {
         return id;
@@ -37,7 +45,6 @@ public class Producto {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-
     @Override
     public String toString() {
         return "Producto{" +
