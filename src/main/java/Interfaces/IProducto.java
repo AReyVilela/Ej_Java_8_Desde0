@@ -1,5 +1,7 @@
 package Interfaces;
 
+import clases.Producto;
+
 public interface IProducto {
 
     public  int getId() ;
@@ -18,4 +20,6 @@ public interface IProducto {
 
     public void setDescripcion(String descripcion) ;
 
+
+    int compare(Producto producto, Producto t1);
 }

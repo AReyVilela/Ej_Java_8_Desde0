@@ -1,74 +1,79 @@
 package clases;
 
 import Excepciones.ListaProductosNegativa;
+import Excepciones.NoExisteProducto;
 import Interfaces.IProducto;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-import static Interfaces.IReponedor.reponerSupermercado;
-import static java.util.stream.Collectors.groupingBy;
-import  static java.util.stream.Collectors.*;
-
-public class Supermercado {
+public class Supermercado implements Comparator<Producto> {
 
     ArrayList<IProducto> productos = new ArrayList<>();
-    ArrayList<Integer> stock = new ArrayList<>();
-    HashMap<ArrayList<Integer>, ArrayList<IProducto>> mapStockProducto = new HashMap<ArrayList<Integer>, ArrayList<IProducto>>();
+
+    HashMap<Integer, Integer> hashmapCompleto = new HashMap<>();
+
     float caja = 0.0f;
 
-    public int incrementoStock(Integer stock) {
-        return stock + 5;
-    }
-
-
-    public int decrementoStock(Integer stock) {
-
-        return --stock;
-
-    }
-
-    public void incrementoCaja(float precio) {
-        caja = caja + precio;
-    }
-
-    public void listarProductos() throws ListaProductosNegativa {
-        //Enseño la lista de los productoso
-        if (productos.isEmpty()) {
-            System.out.println("Lista de productos vacia, rellenando...");
-            reponerSupermercado(productos, stock, mapStockProducto);
+    public void incrementoStock(Integer id) throws NoExisteProducto {
+        IProducto producto = productos.stream().filter(p -> p.getId() == id).findAny().orElse(null);
+        if (producto == null) {
+           throw new NoExisteProducto();
         } else {
-
-
-            for (int i = 0; i < productos.size(); i++) {
-                System.out.println("Stock => " + stock.get(i) + " --> " + productos.get(i));
-            }
+            hashmapCompleto.merge(id, 1, Integer::sum);
         }
     }
+    public void setProductos(ArrayList<IProducto> productosRelleno) {
+        if(this.productos.isEmpty()){
+            this.productos=productosRelleno;
+        }
+    }
+    public void decrementoStock(Integer id) throws NoExisteProducto {
+        IProducto producto = productos.stream().filter(p -> p.getId() == id).findAny().orElse(null);
+        if (producto != null){
+            if(hashmapCompleto.getOrDefault(producto.getId(),0) >0){ // su stock >0
+                hashmapCompleto.put(producto.getId(),hashmapCompleto.getOrDefault(producto.getId(),0)-1);
+                //pongo en la key id -> el valor que tenia -1
+            }else{
+                throw new NoExisteProducto();
+            }
+            System.out.println("Producto vendido !");
+        }
+    }
+    public void incrementoCaja(Integer id) {
+        productos.stream().filter(p-> p.getId()== id).findAny().ifPresent(p-> caja += p.getPrecio());
+    }
+    public void listarProductos() throws ListaProductosNegativa {
+        if (productos.isEmpty()) {
+            throw new ListaProductosNegativa();
+        } else {
+            productos.forEach(IProducto -> System.out.println("Id: " + IProducto.getId() + " ->Precio: " + IProducto.getPrecio() + " ->Des: " + IProducto.getDescripcion() + " ->Stock :" + hashmapCompleto.getOrDefault(IProducto.getId(), 0)));
+        }
+    }
+    public void ordenarPorPrecio() {
+        productos.stream().sorted().forEach(IProducto -> System.out.println("Id: " + IProducto.getId() + " ->Precio: " + IProducto.getPrecio() + " ->Des: " + IProducto.getDescripcion() + " ->Stock :" + hashmapCompleto.getOrDefault(IProducto.getId(), 0)));
 
+    }
+    public void ordendarPorStock() {
+        productos.stream().sorted(Comparator.comparing(IProducto -> hashmapCompleto.getOrDefault(IProducto.getId(), 0))).forEach(IProducto -> System.out.println("**Stock :" + hashmapCompleto.getOrDefault(IProducto.getId(), 0) + " ->Id: " + IProducto.getId() + " ->Precio: " + IProducto.getPrecio() + " ->Des: " + IProducto.getDescripcion()));
+    }
+    public void filtrarProductosporStock(int stockFilter) {
+
+        productos.stream().filter(p -> stockFilter >= hashmapCompleto.getOrDefault(p.getId(), 0)).forEach(IProducto -> System.out.println("Id: " + IProducto.getId() + " ->Precio: " + IProducto.getPrecio() + " ->Des: " + IProducto.getDescripcion() + "  **Stock :" + hashmapCompleto.getOrDefault(IProducto.getId(), 0)));
+
+    }
     public void mostrarValorCaja() {
         System.out.println("Saldo de caja es : " + caja + " €");
         System.out.println("");
     }
-
-    public void venderProducto(int idaEliminar) {
-        if (productos.stream().anyMatch(p -> p.getId() == idaEliminar) == true) {
-            for (int i = 0; i < productos.size(); i++) {
-                if (productos.get(i).getId() == idaEliminar) {
-                    if (stock.get(i) > 0) {
-                        System.out.println("Producto Vendido, sumado a caja...");
-                        incrementoCaja(productos.get(i).getPrecio());
-                        stock.set(i, decrementoStock(stock.get(i)));
-                    } else {
-                        System.out.println("No se puede vender --> Stock= 0, reponiendo 5 unidades...");
-                        stock.set(i, incrementoStock(stock.get(i)));
-                    }
-                }
-
-            }
-        } else {
-            System.out.println("Id no existe");
-        }
+    public void venderProducto(int idaEliminar) throws ListaProductosNegativa, NoExisteProducto {
+        decrementoStock(idaEliminar);
+        incrementoCaja(idaEliminar);
     }
+    @Override
+    public int compare(Producto producto, Producto t1) {
+        return producto.getId() - t1.getId();
+    }
+
 }
+
+
