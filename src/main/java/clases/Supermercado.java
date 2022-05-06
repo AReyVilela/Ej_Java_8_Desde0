@@ -39,6 +39,8 @@ public class Supermercado implements Comparator<Producto> {
             System.out.println("Producto vendido !");
         }
     }
+
+
     public void incrementoCaja(Integer id) {
         productos.stream().filter(p-> p.getId()== id).findAny().ifPresent(p-> caja += p.getPrecio());
     }
@@ -58,7 +60,7 @@ public class Supermercado implements Comparator<Producto> {
     }
     public void filtrarProductosporStock(int stockFilter) {
 
-        productos.stream().filter(p -> stockFilter >= hashmapCompleto.getOrDefault(p.getId(), 0)).forEach(IProducto -> System.out.println("Id: " + IProducto.getId() + " ->Precio: " + IProducto.getPrecio() + " ->Des: " + IProducto.getDescripcion() + "  **Stock :" + hashmapCompleto.getOrDefault(IProducto.getId(), 0)));
+        productos.stream().filter(p -> stockFilter > hashmapCompleto.getOrDefault(p.getId(), 0)).forEach(IProducto -> System.out.println("Id: " + IProducto.getId() + " ->Precio: " + IProducto.getPrecio() + " ->Des: " + IProducto.getDescripcion() + "  **Stock :" + hashmapCompleto.getOrDefault(IProducto.getId(), 0)));
 
     }
     public void mostrarValorCaja() {
